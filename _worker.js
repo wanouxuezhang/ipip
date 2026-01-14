@@ -518,17 +518,17 @@ function renderHtml(initData, config) {
           <div className="glass p-4 rounded-2xl relative overflow-hidden border-t-4 border-neon-cyan shadow-2xl shadow-cyan-900/10 flex flex-col h-full">
             {/* 顶部：当前 IP 连接状态 */}
             <div className="flex justify-between items-center mb-4 z-10 relative flex-shrink-0 flex-wrap gap-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-900/30 text-cyan-400 border border-cyan-800">{t.currentConnection}</span>
+                  <div className="flex items-center gap-2 flex-wrap w-full md:w-auto">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-900/30 text-cyan-400 border border-cyan-800 whitespace-nowrap">{t.currentConnection}</span>
                       
-                      <div className="flex items-center gap-2 px-2 py-0.5 rounded bg-red-900/20 border border-red-900/30 text-[10px]">
-                            <span className="text-red-400 font-bold flex items-center gap-1"><Icons.China className="w-3 h-3" /> {t.cnIp}:</span>
-                            <span className={\`font-mono \${domesticInfo.ip === "Loading..." ? "text-slate-500 animate-pulse" : "text-white"}\`}>
+                      <div className="flex items-center gap-2 px-2 py-0.5 rounded bg-red-900/20 border border-red-900/30 text-[10px] flex-grow md:flex-grow-0 min-w-0">
+                            <span className="text-red-400 font-bold flex items-center gap-1 flex-shrink-0"><Icons.China className="w-3 h-3" /> {t.cnIp}:</span>
+                            <span className={\`font-mono truncate \${domesticInfo.ip === "Loading..." ? "text-slate-500 animate-pulse" : "text-white"}\`}>
                                 {domesticInfo.ip === "Loading..." ? t.checking : (isChinaHidden ? maskIp(domesticInfo.ip) : domesticInfo.ip)}
                             </span>
-                            {domesticInfo.city && <span className="text-slate-400 ml-1 whitespace-nowrap">{isChinaHidden ? "******" : domesticInfo.city}</span>}
+                            {domesticInfo.city && <span className="text-slate-400 ml-1 whitespace-nowrap hidden sm:inline">{isChinaHidden ? "******" : domesticInfo.city}</span>}
                             {domesticInfo.ip !== "Loading..." && domesticInfo.ip !== "N/A" && (
-                                <div className="flex items-center gap-1 border-l border-red-800/30 pl-2 ml-1">
+                                <div className="flex items-center gap-1 border-l border-red-800/30 pl-2 ml-auto">
                                     <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsChinaHidden(!isChinaHidden); }} className="text-slate-400 hover:text-white transition-colors" title={isChinaHidden ? t.show : t.hide}>
                                         {isChinaHidden ? <Icons.EyeOff className="w-3 h-3" /> : <Icons.Eye className="w-3 h-3" />}
                                     </button>
@@ -539,13 +539,15 @@ function renderHtml(initData, config) {
                             )}
                       </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-auto">
-                      {!isCN && (
+                  
+                  {/* === Desktop Only: View Map Button (放回右上角) === */}
+                  {!isCN && (
+                    <div className="hidden md:flex items-center gap-2 ml-auto">
                         <a href={"https://www.google.com/maps?q=" + data.lat + "," + data.lon} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-white transition-colors">
                             {t.viewMap} <Icons.External className="w-2.5 h-2.5" />
                         </a>
-                      )}
-                  </div>
+                    </div>
+                  )}
             </div>
 
             {/* 中间：地图与主要信息 */}
@@ -581,6 +583,16 @@ function renderHtml(initData, config) {
                     </div>
                   ) : (
                     <>
+                      {/* === Mobile Only: View Map 按钮 (悬浮在地图右上角) === */}
+                      <a 
+                        href={"https://www.google.com/maps?q=" + data.lat + "," + data.lon} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="md:hidden absolute top-2 right-2 z-30 flex items-center gap-1 px-2 py-1 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded text-[10px] text-slate-300 hover:text-white hover:bg-slate-800 transition-colors shadow-lg group"
+                      >
+                            {t.viewMap} <Icons.External className="w-2.5 h-2.5 opacity-70 group-hover:opacity-100" />
+                      </a>
+
                       <div className="absolute bottom-2 left-2 z-20 flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded px-2 py-1 shadow-lg">
                           <span className="text-[10px] text-slate-400 font-bold uppercase">{t.localIp}</span>
                           <span className="text-xs font-mono font-bold text-white tracking-tight">{domesticInfo.ip !== "Loading..." && isChinaHidden ? maskIp(data.ip) : data.ip}</span>
@@ -1011,21 +1023,21 @@ Generated by https://t.me/wanouxuezhang
             
             {/* === 移动到底部的：时间和报告导出栏 === */}
             <div className="flex justify-center mt-8">
-                 <div className="flex items-center gap-3 bg-slate-800/40 border border-slate-700/50 rounded-lg p-1.5 backdrop-blur-md">
-                   {/* 本机时间 */}
-                   <div className="flex flex-col px-2 border-r border-slate-700/50">
+                 <div className="flex items-center bg-slate-800/40 border border-slate-700/50 rounded-lg p-1.5 backdrop-blur-md">
+                   {/* 本机时间：由 px-2 改为 px-4 */}
+                   <div className="flex flex-col px-4 border-r border-slate-700/50">
                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t.localTime}</span>
                        <span className="text-sm font-mono font-bold text-white leading-none">{times.local}</span>
                    </div>
-                   {/* IP 时间 */}
-                   <div className="flex flex-col px-2">
+                   {/* IP 时间：由 px-2 改为 px-4 */}
+                   <div className="flex flex-col px-4">
                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t.ipTime}</span>
                        <span className="text-sm font-mono font-bold text-neon-cyan leading-none">{times.ip}</span>
                    </div>
-                   {/* 报告导出按钮 */}
+                   {/* 报告导出按钮：增加 ml-3 以替代原本的 gap */}
                    <button 
                        onClick={handleCopyReport}
-                       className="ml-1 p-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-md transition-all shadow-lg shadow-cyan-900/20"
+                       className="ml-3 p-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-md transition-all shadow-lg shadow-cyan-900/20"
                        title={t.report}
                    >
                        <Icons.Report className="w-4 h-4" />
